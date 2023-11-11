@@ -5,7 +5,7 @@ const userschema = new mongoose.Schema({
         type: String,
         required: true
     },
-    email: {
+    eMail: {
         type: String,
         required: false
     },
@@ -20,3 +20,4 @@ const userschema = new mongoose.Schema({
     }
 })
 
+module.exports = mongoose.model('users', userschema)

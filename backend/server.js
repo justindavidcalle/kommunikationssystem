@@ -12,6 +12,7 @@ app.once('open', () => console.log('connected to Database'))
 
 app.use(express.json())
 
-
+const userRouter = require('./routes/userroute')
+app.use('/users', userRouter)
 
 app.listen(3005, () => console.log('Backend is running on port 3005'))
