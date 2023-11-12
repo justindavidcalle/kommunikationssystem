@@ -2,11 +2,28 @@ GET http://localhost:3005/users
 
 ###
 
+GET http://localhost:3005/users/65500ebd1bc968739c060b4e
+
+###
+
 POST http://localhost:3005/users
 Content-Type: application/json
 
 {
-    "username" : "Justin",
+    "username" : "David",
     "eMail" : "justincalle@outlook.de",
     "password" : "123123"
 }
+
+### 
+
+PATCH http://localhost:3005/users/65500ebd1bc968739c060b4e
+Content-Type: application/json
+
+{
+    "username": "Hercules"
+}
+
+###
+
+DELETE http://localhost:3005/users/6550b1ccf6ac063159b9b925
