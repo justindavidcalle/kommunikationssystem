@@ -22,7 +22,7 @@ router.get('/:id', getUsers , (req, res)=> {
 router.post('/', async (req,res) => {
     const users = new User({
         username: req.body.username,
-        eMail: req.body.eMail,
+        email: req.body.email,
         password: req.body.password
     })
     try{
@@ -38,8 +38,8 @@ router.patch('/:id', getUsers, async (req, res) => {
     if (req.body.username != null) {
         res.user.username = req.body.username;
     }
-    if (req.body.eMail != null) {
-        res.user.eMail = req.body.eMail;
+    if (req.body.email != null) {
+        res.user.email = req.body.email;
     }
     try {
         const updatedUser = await res.user.save();
