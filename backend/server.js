@@ -1,6 +1,9 @@
 const express = require('express')
 const app = express()
 const mongoose = require('mongoose')
+const cors = require('cors')
+
+app.use(cors())
 
 mongoose.connect('mongodb://localhost:27017/kommunikationssystemDB')
 const db = mongoose.connection
