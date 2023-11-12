@@ -11,7 +11,7 @@ Content-Type: application/json
 
 {
     "username" : "David",
-    "eMail" : "justincalle@outlook.de",
+    "email" : "justincalle@outlook.de",
     "password" : "123123"
 }
 
@@ -27,3 +27,13 @@ Content-Type: application/json
 ###
 
 DELETE http://localhost:3005/users/6550b1ccf6ac063159b9b925
+
+###
+
+POST http://localhost:3005/users/login
+Content-Type: application/json
+
+{
+    "username": "David",
+    "password": "123123"
+}
