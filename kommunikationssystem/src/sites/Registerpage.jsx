@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const LoginPage = () => {
+const Registerpage = () => {
   const uri = 'http://localhost:3005/users';
 
   const [formData, setFormData] = useState({
@@ -34,7 +34,7 @@ const LoginPage = () => {
   return (
     <>
       <div className='login-wrapper'>
-        <h1>Please Log In</h1>
+        <h1>Create an Account</h1>
         <form onSubmit={handleSubmit}>
           <label>
             <p>Username</p>
@@ -57,4 +57,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default Registerpage;
