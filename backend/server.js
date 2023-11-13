@@ -7,7 +7,6 @@ const bodyParser = require('body-parser');
 
 app.use(cors());
 
-
 app.use(bodyParser.json());
 
 
@@ -24,7 +23,9 @@ const db = mongoose.connection;
 db.on('error', (error) => console.error(error));
 db.once('open', () => console.log('connected to Database'));
 
-const userRouter = require('./routes/userroute');
-app.use('/users', userRouter);
+const userRouter = require('./routes/userroute')
+const chatRouter = require('./routes/chatroute')
+app.use('/users', userRouter)
+app.use('/chats', chatRouter)
 
 app.listen(3005, () => console.log('Backend is running on port 3005'));

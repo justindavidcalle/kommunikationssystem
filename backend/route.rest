@@ -37,3 +37,14 @@ Content-Type: application/json
     "username": "David",
     "password": "123123"
 }
+
+###
+
+POST http://localhost:3005/chats/send
+Content-Type: application/json
+
+{
+    "fromUsername": "Justin",
+    "toUsername": "David",
+    "text": "Hallo"
+}

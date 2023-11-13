@@ -5,18 +5,19 @@ import Registerpage from './sites/Registerpage';
 import Loginpage from './sites/Loginpage';
 
 function App() {
-  const [userToken, setUserToken] = useState(null);
+  const storedToken = JSON.parse(sessionStorage.getItem('token'));
+  const [userToken, setUserToken] = useState(storedToken);
 
   useEffect(() => {
-    // This effect runs when userToken changes
-    if (userToken) {
-      console.log('User is logged in. Token:', userToken);
-      // You can add additional logic here to redirect or load other components
+    // This effect runs when the component mounts
+    if (storedToken) {
+      console.log('User is logged in. Token:', storedToken);
     }
-  }, [userToken]);
+  }, []); // Empty dependency array ensures this runs only once on mount
 
   const handleLogin = async (token) => {
     setUserToken(token);
+    sessionStorage.setItem('token', JSON.stringify(token));
   };
 
   return (

@@ -1,9 +1,12 @@
+import Chatbox from "../components/chatbox"
 
 
 const Home = () => {
   return (
-    <div>HOME</div>
-    
+    <>
+    <h1>Home</h1>
+    <Chatbox />
+    </>    
   )
 }
 
