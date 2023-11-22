@@ -1,0 +1,10 @@
+{
+    "name": "KommunikationssystemCluster",
+    "type": "mongodb-atlas",
+    "config": {
+        "clusterName": "KommunikationssystemCluster",
+        "readPreference": "primary",
+        "wireProtocolEnabled": false
+    },
+    "version": 1
+}
