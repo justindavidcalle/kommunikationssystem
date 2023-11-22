@@ -46,5 +46,9 @@ Content-Type: application/json
 {
     "fromUsername": "Justin",
     "toUsername": "David",
-    "text": "Hallo"
+    "text": "Wie gehts?"
 }
+
+###
+
+GET http://localhost:3005/chats/retrieve?fromUsername=David&toUsername=justindavidcalle

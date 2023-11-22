@@ -6,10 +6,7 @@ const Chatbox = () => {
   const [inputText, setInputText] = useState('');
   const [username, setUsername] = useState('');
 
-  useEffect(() => {
-    // Retrieve messages when the component mounts
-    retrieveMessages();
-  }, []); // Empty dependency array ensures this effect runs once on mount
+  
 
   const handleInputChange = (e) => {
     setInputText(e.target.value);
@@ -22,7 +19,7 @@ const Chatbox = () => {
   const handleSendMessage = async () => {
     if (inputText.trim() !== '' && username.trim() !== '') {
       const messageData = {
-        fromUsername: sessionStorage.getItem('token'),
+        fromUsername: sessionStorage.getItem('token').replace(/['"]+/g, ''),
         toUsername: username,
         text: inputText,
       };
@@ -32,7 +29,7 @@ const Chatbox = () => {
         await axios.post('http://localhost:3005/chats/send', messageData);
 
         // Update the local state with the new message
-        setMessages([...messages, { text: inputText, fromUsername: sessionStorage.getItem('token'), id: new Date().getTime() }]);
+        setMessages([...messages, { text: inputText, fromUsername: sessionStorage.getItem('token').replace(/['"]+/g, ''), id: new Date().getTime() }]);
         setInputText('');
       } catch (error) {
         console.error('Error sending message:', error);
@@ -41,7 +38,14 @@ const Chatbox = () => {
   };
 
   const retrieveMessages = async () => {
-    // Implement logic to retrieve messages if needed
+    try{
+      const response = await axios.get(`http://localhost:3005/chats/retrieve?fromUsername=${sessionStorage.getItem('token').replace(/['"]+/g, '')}&toUsername=${username}`)
+      
+      setMessages(response.data)
+
+    }catch(error){
+      console.error('Error sending message:', error)
+    }
   };
 
   return (
@@ -49,15 +53,16 @@ const Chatbox = () => {
       <h2>Chatbox</h2>
       <div>
         {messages.map((message) => (
-          <div key={message.id}>
-            <strong>{message.fromUsername}:</strong> {message.text}
-          </div>
+        <div key={message.id}>
+          <strong>{message.fromUsername}:</strong> {message.text}
+        </div>
         ))}
       </div>
       <div>
         <input type="text" placeholder="Username" value={username} onChange={handleUsernameChange} />
         <input type="text" placeholder="Message" value={inputText} onChange={handleInputChange} />
         <button onClick={handleSendMessage}>Send</button>
+        <button onClick={retrieveMessages}>GetMessages</button>
       </div>
     </div>
   );
