@@ -18,7 +18,7 @@ app.use(
   })
 );
 
-mongoose.connect('mongodb://localhost:27017/kommunikationssystemDB');
+mongoose.connect('mongodb+srv://Justin:05strEEt20@kommunikationssystemclu.zk72crf.mongodb.net/');
 const db = mongoose.connection;
 db.on('error', (error) => console.error(error));
 db.once('open', () => console.log('connected to Database'));

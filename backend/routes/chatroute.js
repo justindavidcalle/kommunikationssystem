@@ -49,4 +49,18 @@ router.get('/retrieve', async (req, res) => {
   }
 });
 
+// Delete a chat message by ID
+router.delete('/:id', async (req, res) => {
+  try {
+    const deletedMessage = await Chat.findByIdAndDelete(req.params.id);
+    if (!deletedMessage) {
+      return res.status(404).json({ error: 'Message not found' });
+    }
+    res.json({ message: 'Message deleted successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server Error' });
+  }
+}); 
+
 module.exports = router;

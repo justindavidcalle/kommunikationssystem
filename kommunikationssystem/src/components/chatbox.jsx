@@ -1,35 +1,54 @@
+// Chatbox.jsx
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import '../css/Chatbox.css';
 
 const Chatbox = () => {
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
-  const [username, setUsername] = useState('');
+  const [selectedUsername, setSelectedUsername] = useState(
+    sessionStorage.getItem('token').replace(/['"]+/g, '')
+  ); // Set default to the logged-in username
+  const [usernames, setUsernames] = useState([]);
 
-  
+  useEffect(() => {
+    fetchUsernames();
+  }, []);
+
+  const fetchUsernames = async () => {
+    try {
+      const response = await axios.get('http://localhost:3005/users');
+      setUsernames(response.data);
+    } catch (error) {
+      console.error('Error fetching usernames:', error);
+    }
+  };
 
   const handleInputChange = (e) => {
     setInputText(e.target.value);
   };
 
-  const handleUsernameChange = (e) => {
-    setUsername(e.target.value);
-  };
-
   const handleSendMessage = async () => {
-    if (inputText.trim() !== '' && username.trim() !== '') {
+    if (inputText.trim() !== '' && selectedUsername.trim() !== '') {
       const messageData = {
         fromUsername: sessionStorage.getItem('token').replace(/['"]+/g, ''),
-        toUsername: username,
+        toUsername: selectedUsername,
         text: inputText,
       };
 
       try {
-        // Send the message using Axios
         await axios.post('http://localhost:3005/chats/send', messageData);
-
-        // Update the local state with the new message
-        setMessages([...messages, { text: inputText, fromUsername: sessionStorage.getItem('token').replace(/['"]+/g, ''), id: new Date().getTime() }]);
+        setMessages([
+          ...messages,
+          {
+            text: inputText,
+            fromUsername: sessionStorage
+              .getItem('token')
+              .replace(/['"]+/g, ''),
+            id: new Date().getTime(),
+          },
+        ]);
         setInputText('');
       } catch (error) {
         console.error('Error sending message:', error);
@@ -38,13 +57,36 @@ const Chatbox = () => {
   };
 
   const retrieveMessages = async () => {
-    try{
-      const response = await axios.get(`http://localhost:3005/chats/retrieve?fromUsername=${sessionStorage.getItem('token').replace(/['"]+/g, '')}&toUsername=${username}`)
-      
-      setMessages(response.data)
+    try {
+      const response = await axios.get(
+        `http://localhost:3005/chats/retrieve?fromUsername=${sessionStorage
+          .getItem('token')
+          .replace(/['"]+/g, '')}&toUsername=${selectedUsername}`
+      );
+  
+      // Convert ObjectId to string for the 'id' field
+      const messagesWithIdString = response.data.map((message) => ({
+        ...message,
+        id: message._id.toString(),
+      }));
+  
+      setMessages(messagesWithIdString);
+    } catch (error) {
+      console.error('Error retrieving messages:', error);
+    }
+  };
 
-    }catch(error){
-      console.error('Error sending message:', error)
+  const handleSelectUsername = (selectedUsername) => {
+    setSelectedUsername(selectedUsername);
+  };
+
+  const handleDeleteMessage = async (messageId) => {
+    try {
+      await axios.delete(`http://localhost:3005/chats/${messageId}`);
+      const updatedMessages = messages.filter((message) => message.id !== messageId);
+      setMessages(updatedMessages);
+    } catch (error) {
+      console.error('Error deleting message:', error);
     }
   };
 
@@ -53,16 +95,36 @@ const Chatbox = () => {
       <h2>Chatbox</h2>
       <div>
         {messages.map((message) => (
-        <div key={message.id}>
-          <strong>{message.fromUsername}:</strong> {message.text}
-        </div>
+          <div key={message.id}>
+            <strong>{message.fromUsername}:</strong> {message.text}
+            <button onClick={() => handleDeleteMessage(message.id)}>Delete</button>
+          </div>
         ))}
       </div>
       <div>
-        <input type="text" placeholder="Username" value={username} onChange={handleUsernameChange} />
-        <input type="text" placeholder="Message" value={inputText} onChange={handleInputChange} />
+        
+        <input
+          type="text"
+          placeholder="Message"
+          value={inputText}
+          onChange={handleInputChange}
+        />
         <button onClick={handleSendMessage}>Send</button>
         <button onClick={retrieveMessages}>GetMessages</button>
+
+        <ul>
+          {usernames.map((user) => (
+            <li
+              key={user._id}
+              className={user.username === selectedUsername ? 'selected' : ''}
+            >
+              {user.username}
+              <button onClick={() => handleSelectUsername(user.username)}>
+                Select
+              </button>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );

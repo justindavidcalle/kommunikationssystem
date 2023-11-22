@@ -52,3 +52,12 @@ Content-Type: application/json
 ###
 
 GET http://localhost:3005/chats/retrieve?fromUsername=David&toUsername=justindavidcalle
+
+
+###
+
+GET http://localhost:3005/users/getallusernames
+
+###
+
+DELETE http://localhost:3005/chats/655d4c4c5397be0ff1ef4887

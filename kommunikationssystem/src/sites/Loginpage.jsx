@@ -10,7 +10,6 @@ const loginUser = async (credentials) => {
       }
     });
 
-    // Assuming the server responds with a token or user data
     return response.data;
   } catch (error) {
     console.error('Login failed:', error);
@@ -26,21 +25,15 @@ const Loginpage = ({ setUserToken }) => {
     e.preventDefault();
 
     try {
-      // Send user credentials to the server for authentication
       const userData = await loginUser({
         username,
         password
       });
 
-      // Log the user data to check the response from the server
       console.log('User data:', userData);
-
-      // Assuming the server responds with a token or user data
-      // Set the user token or user data in the parent component
-      setUserToken(userData.token); // Adjust this based on the actual response structure
+      setUserToken(userData.token);
 
     } catch (error) {
-      // Handle authentication errors
       console.error('Login failed:', error);
     }
   };

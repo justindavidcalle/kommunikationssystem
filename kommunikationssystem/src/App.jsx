@@ -22,12 +22,14 @@ function App() {
 
   return (
     <>
-      <h1>APPLICATION</h1>
       {!userToken ? (
-        <Loginpage setUserToken={handleLogin} />
+        <>
+          <Loginpage setUserToken={handleLogin} />
+          <Registerpage />
+        </>
       ) : (
         <>
-          <Registerpage />
+          
           <Home />
         </>
       )}

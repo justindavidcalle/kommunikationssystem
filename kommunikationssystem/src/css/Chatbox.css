@@ -1,0 +1,24 @@
+/* Chatbox.css */
+
+/* Style for the list item when selected */
+ul li.selected {
+    background-color: #e0e0e0;
+  }
+  
+  /* Optional: Add some padding and margin for better styling */
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  li {
+    margin: 5px 0;
+  }
+  
+  /* Optional: Style the input and buttons */
+  input,
+  button {
+    margin: 5px;
+    padding: 8px;
+  }
+  
