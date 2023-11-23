@@ -7,7 +7,7 @@ const Chatbox = () => {
   const [inputText, setInputText] = useState('');
   const [selectedUsername, setSelectedUsername] = useState(
     sessionStorage.getItem('token').replace(/['"]+/g, '')
-  ); // Set default to the logged-in username
+  );
   const [usernames, setUsernames] = useState([]);
 
   useEffect(() => {
@@ -61,13 +61,14 @@ const Chatbox = () => {
           .getItem('token')
           .replace(/['"]+/g, '')}&toUsername=${selectedUsername}`
       );
-  
-      // Convert ObjectId to string for the 'id' field
+
+      // Convert ObjectId to string for the 'id' field and format timestamp
       const messagesWithIdString = response.data.map((message) => ({
         ...message,
         id: message._id.toString(),
+        formattedTime: new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       }));
-  
+
       setMessages(messagesWithIdString);
     } catch (error) {
       console.error('Error retrieving messages:', error);
@@ -94,13 +95,12 @@ const Chatbox = () => {
       <div>
         {messages.map((message) => (
           <div key={message.id}>
-            <strong>{message.fromUsername}:</strong> {message.text}
+            <strong>{message.fromUsername}:</strong> {message.text} - {message.formattedTime}
             <button onClick={() => handleDeleteMessage(message.id)}>Delete</button>
           </div>
         ))}
       </div>
       <div>
-        
         <input
           type="text"
           placeholder="Message"
@@ -116,9 +116,8 @@ const Chatbox = () => {
               key={user._id}
               className={user.username === selectedUsername ? 'selected' : ''}
             >
-              {user.username}
               <button onClick={() => handleSelectUsername(user.username)}>
-                Select
+                {user.username}
               </button>
             </li>
           ))}

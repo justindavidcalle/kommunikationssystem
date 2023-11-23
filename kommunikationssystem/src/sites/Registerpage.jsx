@@ -1,5 +1,6 @@
 import axios from 'axios';
 import {useState} from 'react'
+import '../css/Registerpage.css'
 
 const Registerpage = () => {
   const uri = 'http://localhost:3005/users';
@@ -31,7 +32,7 @@ const Registerpage = () => {
 
   return (
     <>
-      <div className='login-wrapper'>
+      <div className='register-container'>
         <h1>Create an Account</h1>
         <form onSubmit={handleSubmit}>
           <label>
