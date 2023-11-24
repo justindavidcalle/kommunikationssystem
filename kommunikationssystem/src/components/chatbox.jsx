@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import io from 'socket.io-client';
 import '../css/Chatbox.css';
 
 const Chatbox = () => {
@@ -9,10 +10,37 @@ const Chatbox = () => {
     sessionStorage.getItem('token').replace(/['"]+/g, '')
   );
   const [usernames, setUsernames] = useState([]);
+  const [socket, setSocket] = useState(null);
+  const [showUserList, setShowUserList] = useState(false);
 
   useEffect(() => {
+    const newSocket = io('http://localhost:3005');
+    setSocket(newSocket);
+
     fetchUsernames();
+
+    return () => {
+      if (newSocket) {
+        newSocket.disconnect();
+      }
+    };
   }, []);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on('message', (data) => {
+        setMessages((prevMessages) => [...prevMessages, data]);
+      });
+
+      return () => {
+        socket.off('message');
+      };
+    }
+  }, [socket]);
+
+  useEffect(() => {
+    retrieveMessages();
+  }, [messages, selectedUsername]);
 
   const fetchUsernames = async () => {
     try {
@@ -35,22 +63,10 @@ const Chatbox = () => {
         text: inputText,
       };
 
-      try {
-        await axios.post('http://localhost:3005/chats/send', messageData);
-        setMessages([
-          ...messages,
-          {
-            text: inputText,
-            fromUsername: sessionStorage
-              .getItem('token')
-              .replace(/['"]+/g, ''),
-            id: new Date().getTime(),
-          },
-        ]);
-        setInputText('');
-      } catch (error) {
-        console.error('Error sending message:', error);
-      }
+      socket.emit('sendMessage', messageData);
+
+      setInputText('');
+      retrieveMessages();
     }
   };
 
@@ -62,11 +78,13 @@ const Chatbox = () => {
           .replace(/['"]+/g, '')}&toUsername=${selectedUsername}`
       );
 
-      // Convert ObjectId to string for the 'id' field and format timestamp
       const messagesWithIdString = response.data.map((message) => ({
         ...message,
         id: message._id.toString(),
-        formattedTime: new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        formattedTime: new Date(message.timestamp).toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
       }));
 
       setMessages(messagesWithIdString);
@@ -75,8 +93,14 @@ const Chatbox = () => {
     }
   };
 
-  const handleSelectUsername = (selectedUsername) => {
-    setSelectedUsername(selectedUsername);
+  const handleSelectUsername = (newSelectedUsername) => {
+    if (newSelectedUsername === selectedUsername) {
+      setShowUserList(false);
+    } else {
+      setSelectedUsername(newSelectedUsername);
+      setShowUserList(false);
+      retrieveMessages();
+    }
   };
 
   const handleDeleteMessage = async (messageId) => {
@@ -89,40 +113,63 @@ const Chatbox = () => {
     }
   };
 
+  const handleSignOut = () => {
+    sessionStorage.removeItem('token');
+    alert('Reload the page please!');
+  };
+
+  const handleToggleUserList = () => {
+    setShowUserList((prevShowUserList) => !prevShowUserList);
+  };
+
   return (
     <div>
-      <h2>Chatbox</h2>
-      <div>
-        {messages.map((message) => (
-          <div key={message.id}>
-            <strong>{message.fromUsername}:</strong> {message.text} - {message.formattedTime}
-            <button onClick={() => handleDeleteMessage(message.id)}>Delete</button>
-          </div>
-        ))}
+      <div className="header">
+        <h2>Chatbox</h2>
+        <div>
+          <button onClick={handleToggleUserList}>
+            {selectedUsername === ''
+              ? 'Select User'
+              : `Chat with ${selectedUsername}`}
+          </button>
+        </div>
       </div>
-      <div>
-        <input
-          type="text"
-          placeholder="Message"
-          value={inputText}
-          onChange={handleInputChange}
-        />
-        <button onClick={handleSendMessage}>Send</button>
-        <button onClick={retrieveMessages}>GetMessages</button>
-
-        <ul>
-          {usernames.map((user) => (
-            <li
-              key={user._id}
-              className={user.username === selectedUsername ? 'selected' : ''}
-            >
-              <button onClick={() => handleSelectUsername(user.username)}>
-                {user.username}
-              </button>
-            </li>
+      <div className="container">
+        {showUserList && (
+          <ul className="user-list">
+            {usernames.map((user) => (
+              <li
+                key={user._id}
+                className={user.username === selectedUsername ? 'selected' : ''}
+              >
+                <button onClick={() => handleSelectUsername(user.username)}>
+                  {user.username}
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+        <div className="message-container">
+          {messages.map((message) => (
+            <div key={message.id}>
+              <strong>{message.fromUsername}:</strong> {message.text} - {message.formattedTime}
+              <button onClick={() => handleDeleteMessage(message.id)}>Delete</button>
+            </div>
           ))}
-        </ul>
+        </div>
+        <div className="input-container">
+          <input
+            type="text"
+            placeholder="Message"
+            value={inputText}
+            onChange={handleInputChange}
+          />
+          <button onClick={handleSendMessage}>Send</button>
+        </div>
       </div>
+      <button className="sign-out-button" onClick={handleSignOut}>
+        Sign Out
+      </button>
     </div>
   );
 };

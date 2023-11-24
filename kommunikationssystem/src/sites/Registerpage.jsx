@@ -1,13 +1,13 @@
 import axios from 'axios';
-import {useState} from 'react'
-import '../css/Registerpage.css'
+import { useState } from 'react';
+import '../css/Registerpage.css';
 
 const Registerpage = () => {
   const uri = 'http://localhost:3005/users';
 
   const [formData, setFormData] = useState({
     username: '',
-    email: '', 
+    email: '',
     password: '',
   });
 
@@ -25,6 +25,13 @@ const Registerpage = () => {
     try {
       const response = await axios.post(uri, formData);
       console.log('User data sent successfully:', response.data);
+
+      // Reset the form after successful registration
+      setFormData({
+        username: '',
+        email: '',
+        password: '',
+      });
     } catch (error) {
       console.error('Error sending user data:', error.message);
     }
@@ -37,15 +44,15 @@ const Registerpage = () => {
         <form onSubmit={handleSubmit}>
           <label>
             <p>Username</p>
-            <input type="text" placeholder='username' name='username' value={formData.username} onChange={handleChange} />
+            <input type='text' placeholder='username' name='username' value={formData.username} onChange={handleChange} />
           </label>
           <label>
             <p>E-Mail</p>
-            <input type="email" placeholder='email' name='email' value={formData.email} onChange={handleChange} />
+            <input type='email' placeholder='email' name='email' value={formData.email} onChange={handleChange} />
           </label>
           <label>
             <p>Password</p>
-            <input type="password" placeholder='password' name='password' value={formData.password} onChange={handleChange} />
+            <input type='password' placeholder='password' name='password' value={formData.password} onChange={handleChange} />
           </label>
           <div>
             <button type='submit'>Submit</button>
